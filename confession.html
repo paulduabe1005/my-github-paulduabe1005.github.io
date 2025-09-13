@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A Little Message</title>
+  <style>
+    :root{--bg1:#fceabb;--bg2:#f8b500;--accent:#ff6b81}
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      margin:0;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      padding:20px;
+    }
+    .card{
+      width:100%;max-width:460px;background:#fff;border-radius:16px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.12);padding:26px;text-align:center;
+    }
+    h1{margin:0 0 8px;font-size:1.4rem}
+    p{margin:6px 0;color:#333;line-height:1.4}
+    button{
+      margin-top:14px;padding:10px 18px;border-radius:10px;border:0;
+      font-weight:600;background:var(--accent);color:white;cursor:pointer;
+    }
+    .secret{display:none;margin-top:12px}
+    .reply-area{margin-top:12px}
+    input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
+    .small{font-size:.85rem;color:#666;margin-top:8px}
+    .actions{display:flex;gap:8px;justify-content:center;margin-top:12px}
+    .btn-ghost{background:#f3f3f3;color:#333}
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Can I tell you something?</h1>
+    <p>I wrote this because I wanted to be honest. Press the button when you're ready to read.</p>
+
+    <button id="reveal">I'm ready</button>
+
+    <div id="secret" class="secret" aria-hidden="true">
+      <p><strong>Hey — I've liked you for a while.</strong></p>
+      <p>If you're open to it, I'd really like to take you out sometime. No pressure — answer honestly. 😊</p>
+
+      <div class="reply-area">
+        <p class="small">If you'd like to reply now, type a short message below (optional):</p>
+        <input id="replyText" type="text" placeholder="Your reply (optional)"/>
+        <div class="actions">
+          <button id="send" class="btn-ghost">Send reply (demo only)</button>
+          <button id="close">Hide</button>
+        </div>
+        <p id="sentNote" class="small" style="display:none;color:green">Reply saved locally in your browser (demo).</p>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top:14px">No tracking, no installs — just a simple page. You can close anytime.</p>
+  </div>
+
+<script>
+  const revealBtn = document.getElementById('reveal');
+  const secret = document.getElementById('secret');
+  const closeBtn = document.getElementById('close');
+  const sendBtn = document.getElementById('send');
+  const replyText = document.getElementById('replyText');
+  const sentNote = document.getElementById('sentNote');
+
+  revealBtn.addEventListener('click', () => {
+    secret.style.display = 'block';
+    secret.setAttribute('aria-hidden','false');
+    revealBtn.style.display = 'none';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    secret.style.display = 'none';
+    secret.setAttribute('aria-hidden','true');
+    revealBtn.style.display = 'inline-block';
+  });
+
+  // Demo "send": store reply in localStorage (so nothing leaves her phone)
+  sendBtn.addEventListener('click', () => {
+    const text = replyText.value.trim();
+    if(!text){
+      sentNote.style.display = 'block';
+      sentNote.textContent = 'No message entered — nothing saved.';
+      setTimeout(()=>sentNote.style.display='none',2000);
+      return;
+    }
+    // store locally so she can keep it or delete it; this does NOT transmit anywhere
+    const timestamp = new Date().toISOString();
+    const payload = { text, timestamp };
+    // this example stores replies in localStorage (private to her device)
+    const existing = JSON.parse(localStorage.getItem('confession-replies') || '[]');
+    existing.push(payload);
+    localStorage.setItem('confession-replies', JSON.stringify(existing));
+    replyText.value = '';
+    sentNote.style.display = 'block';
+    sentNote.textContent = 'Reply saved locally on your phone (demo).';
+  });
+</script>
+</body>
+</html>
